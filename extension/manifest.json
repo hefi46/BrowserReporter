@@ -11,6 +11,8 @@
   ],
   "host_permissions": [
     "http://localhost:3000/*",
+    "http://BrowserReporter/*",
+    "https://BrowserReporter/*",
     "http://browser-reporter.local/*",
     "https://browser-reporter.local/*"
   ],

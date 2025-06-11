@@ -108,18 +108,29 @@ function updateUI(status) {
     const reportNowBtn = document.getElementById('reportNow');
     const reportInterval = document.getElementById('reportInterval');
     
+    // Extract hostname from SERVER_URL for display
+    const serverHostname = new URL(CONFIG.SERVER_URL).hostname;
+    
     // Update connection status
-    connectionDiv.className = 'connection-status ' + (status.connection.isConnected ? 'connected' : 'disconnected');
     if (status.connection.isConnected) {
+        connectionDiv.className = 'connection-status connected';
         connectionDiv.innerHTML = `
             <i class="bi bi-check-circle-fill"></i>
-            Connected to server
+            Connected to ${serverHostname}
         `;
         reportNowBtn.disabled = false;
-    } else {
+    } else if (status.connection.isConnecting) {
+        connectionDiv.className = 'connection-status connecting';
         connectionDiv.innerHTML = `
-            <i class="bi bi-x-circle-fill"></i>
-            Not connected to server
+            <i class="bi bi-arrow-clockwise spin"></i>
+            Connecting to ${serverHostname}...
+        `;
+        reportNowBtn.disabled = true;
+    } else {
+        connectionDiv.className = 'connection-status disconnected';
+        connectionDiv.innerHTML = `
+            <i class="bi bi-wifi-off"></i>
+            Cannot connect to ${serverHostname}
         `;
         reportNowBtn.disabled = true;
     }

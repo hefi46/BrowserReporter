@@ -19,6 +19,7 @@ let lastReportStatus = {
 // Connection status tracking
 let connectionStatus = {
     isConnected: false,
+    isConnecting: false,
     lastCheck: null,
     lastSuccess: null,
     checkInterval: null
@@ -62,6 +63,9 @@ function updateConnectionBadge() {
 async function checkServerConnection() {
     try {
         console.log('Checking server connection...');
+        connectionStatus.isConnecting = true;
+        notifyStatusUpdate(); // Notify that we're connecting
+        
         const response = await fetch(`${CONFIG.SERVER_URL}/api/health`, {
             headers: {
                 'X-API-Key': EXTENSION_CONFIG.API_KEY
@@ -70,6 +74,7 @@ async function checkServerConnection() {
         
         const wasConnected = connectionStatus.isConnected;
         connectionStatus.isConnected = response.ok;
+        connectionStatus.isConnecting = false;
         connectionStatus.lastCheck = new Date();
         
         if (response.ok) {
@@ -87,6 +92,7 @@ async function checkServerConnection() {
     } catch (error) {
         console.error('Server connection check failed:', error);
         connectionStatus.isConnected = false;
+        connectionStatus.isConnecting = false;
     }
     
     updateConnectionBadge();
@@ -115,6 +121,7 @@ function notifyStatusUpdate() {
         ...lastReportStatus,
         connection: {
             isConnected: connectionStatus.isConnected,
+            isConnecting: connectionStatus.isConnecting,
             lastCheck: connectionStatus.lastCheck?.toISOString(),
             lastSuccess: connectionStatus.lastSuccess?.toISOString()
         }
@@ -269,6 +276,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             ...lastReportStatus,
             connection: {
                 isConnected: connectionStatus.isConnected,
+                isConnecting: connectionStatus.isConnecting,
                 lastCheck: connectionStatus.lastCheck?.toISOString(),
                 lastSuccess: connectionStatus.lastSuccess?.toISOString()
             }
@@ -283,6 +291,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 ...lastReportStatus,
                 connection: {
                     isConnected: connectionStatus.isConnected,
+                    isConnecting: connectionStatus.isConnecting,
                     lastCheck: connectionStatus.lastCheck?.toISOString(),
                     lastSuccess: connectionStatus.lastSuccess?.toISOString()
                 }
@@ -298,6 +307,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             ...lastReportStatus,
             connection: {
                 isConnected: connectionStatus.isConnected,
+                isConnecting: connectionStatus.isConnecting,
                 lastCheck: connectionStatus.lastCheck?.toISOString(),
                 lastSuccess: connectionStatus.lastSuccess?.toISOString()
             }
