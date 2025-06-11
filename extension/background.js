@@ -3,7 +3,7 @@ importScripts('config.js');
 
 // Extension-specific configuration
 const EXTENSION_CONFIG = {
-    API_KEY: 'local-dev-key', // Development API key - should match server's EXTENSION_API_KEY
+    API_KEY: 'production-api-key-replace-with-generated-key', // Production API key - should match server's EXTENSION_API_KEY
 };
 
 // Status tracking
