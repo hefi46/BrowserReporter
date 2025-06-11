@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      # Active Directory settings (replace with your values)
+      - AD_URL=ldaps://your-ad-server.com
+      - AD_BASE_DN=DC=yourdomain,DC=com
+      - AD_USERNAME=serviceaccount@yourdomain.com
+      - AD_PASSWORD=your-secure-password
+      - AD_ADMIN_GROUP=CN=AdminGroup,OU=Groups,DC=yourdomain,DC=com
+      # Security settings
+      - SESSION_SECRET=change-this-to-a-secure-secret
+      - EXTENSION_API_KEY=change-this-to-a-secure-key
+      # CORS settings (adjust based on your frontend URL)
+      - CORS_ORIGIN=https://your-frontend-domain.com
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3" 

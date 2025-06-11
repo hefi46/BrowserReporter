@@ -1,0 +1,29 @@
+{
+  "name": "browser-reporter-installer",
+  "version": "1.0.0",
+  "description": "Browser Reporter Server Installer",
+  "main": "config.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "create-msi": "node build-msi.js"
+  },
+  "build": {
+    "appId": "com.yourcompany.browser-reporter",
+    "productName": "Browser Reporter Server",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "msi",
+      "icon": "assets/icon.ico"
+    }
+  },
+  "dependencies": {
+    "electron": "^28.1.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.9.1",
+    "electron-wix-msi": "^5.0.0"
+  }
+} 

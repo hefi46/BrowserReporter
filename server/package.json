@@ -1,0 +1,36 @@
+{
+  "name": "browser-reporter",
+  "version": "1.0.0",
+  "description": "An application to report browser data from clients to a master server with AD authentication",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:local": "node server.js --mode local",
+    "start:service": "node server.js --mode service",
+    "dev": "nodemon server.js --mode local",
+    "build": "npm run build:server && npm run build:extension",
+    "build:server": "echo 'Building server...'",
+    "build:extension": "echo 'Building extension...'"
+  },
+  "dependencies": {
+    "activedirectory2": "^2.1.0",
+    "body-parser": "^1.20.2",
+    "connect-sqlite3": "^0.9.13",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "exceljs": "^4.3.0",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.17.3",
+    "helmet": "^7.0.0",
+    "hpp": "^0.2.3",
+    "node-windows": "^1.0.0-beta.8",
+    "sqlite3": "^5.1.6",
+    "toobusy-js": "^0.5.1",
+    "winston": "^3.8.2",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
