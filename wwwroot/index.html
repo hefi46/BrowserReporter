@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Reporter - Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-check-auth {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="dashboard-container p-4">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center mb-4">🌐 Browser Reporter Dashboard</h1>
+                    <div class="alert alert-info">
+                        <h4>✅ ASP.NET Core Server is Running!</h4>
+                        <p><strong>Authentication:</strong> Windows Authentication (Active Directory)</p>
+                        <p><strong>Admin Group:</strong> BrowserReporterAdmins</p>
+                        <p><strong>Status:</strong> Ready to receive browser data</p>
+                        <p><strong>Framework:</strong> ASP.NET Core with Entity Framework</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">🔐 Authentication Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <p id="auth-status">Click below to check your authentication status...</p>
+                            <button id="check-auth" class="btn btn-primary btn-check-auth">Check My Access</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">📊 System Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>✅ Database: SQLite Connected</p>
+                            <p>✅ Windows Auth: Enabled</p>
+                            <p>✅ API Endpoints: Active</p>
+                            <p>✅ Entity Framework: Ready</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">🚀 API Endpoints</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Authentication:</h6>
+                                    <ul>
+                                        <li><code>GET /api/auth/user</code> - Get current user</li>
+                                        <li><code>POST /api/auth/logout</code> - Logout</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Reports:</h6>
+                                    <ul>
+                                        <li><code>GET /api/reports/all</code> - Get all reports</li>
+                                        <li><code>GET /api/reports/user/{username}</code> - Get user report</li>
+                                        <li><code>POST /api/reports/data</code> - Submit browser data</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('check-auth').addEventListener('click', async () => {
+            const statusElement = document.getElementById('auth-status');
+            statusElement.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Checking authentication...';
+            
+            try {
+                const response = await fetch('/api/auth/user');
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    statusElement.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✅ Authenticated Successfully!</strong><br>
+                            <strong>User:</strong> ${user.displayName || user.username}<br>
+                            <strong>Username:</strong> ${user.username}<br>
+                            <strong>Email:</strong> ${user.email || 'Not available'}<br>
+                            <strong>Department:</strong> ${user.department || 'Not available'}<br>
+                            <strong>Admin Access:</strong> ${user.isAdmin ? '✅ Yes' : '❌ No'}<br>
+                            <strong>Auth Type:</strong> ${user.authenticationType}
+                        </div>
+                    `;
+                } else if (response.status === 403) {
+                    statusElement.innerHTML = `
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Access Denied</strong><br>
+                            You are authenticated but not a member of the <strong>BrowserReporterAdmins</strong> group.<br>
+                            <small class="text-muted">Contact your administrator to be added to this group.</small>
+                        </div>
+                    `;
+                } else if (response.status === 401) {
+                    statusElement.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>❌ Not Authenticated</strong><br>
+                            Windows Authentication failed. This could mean:<br>
+                            <ul>
+                                <li>You're not logged into the domain</li>
+                                <li>Windows Authentication is not enabled</li>
+                                <li>Browser doesn't support integrated authentication</li>
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    statusElement.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>❌ Error (${response.status})</strong><br>
+                            ${response.statusText}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                statusElement.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>❌ Connection Error:</strong><br>
+                        ${error.message}<br>
+                        <small class="text-muted">Make sure the server is running on the correct port.</small>
+                    </div>
+                `;
+            }
+        });
+
+        // Redirect to login page on load
+        window.addEventListener('load', () => {
+            window.location.href = '/login.html';
+        });
+    </script>
+</body>
+</html> 
